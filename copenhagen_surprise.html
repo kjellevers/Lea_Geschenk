@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eine Überraschung für Lea</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(to bottom, #f9f4ed 0%, #f5ede0 100%);
+            color: #5d4e3c;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .heart-bg, .teddy-bg {
+            position: fixed;
+            opacity: 0.06;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .heart-bg {
+            font-size: 3rem;
+            color: #8b3a3a;
+        }
+
+        .teddy-bg {
+            font-size: 2.5rem;
+        }
+
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: rgba(212, 134, 156, 0.15);
+            font-size: 1em;
+            animation: fall linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        section {
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #5d4e3c;
+        }
+
+        h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #d4869c;
+        }
+
+        p {
+            font-size: clamp(1.1rem, 2.2vw, 1.3rem);
+            max-width: 600px;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .accent {
+            color: #d4869c;
+            font-weight: 700;
+        }
+
+        .date-box {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 2rem 3rem;
+            border-radius: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .date-box p:first-child {
+            font-size: clamp(1.4rem, 2.8vw, 1.8rem);
+        }
+
+        .date-box p:last-child {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+        }
+
+        .detail-grid {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 1100px;
+            width: 100%;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 2rem;
+            border-radius: 25px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            flex: 0 1 280px;
+        }
+
+        .flow-arrow {
+            font-size: 3rem;
+            color: #d4869c;
+            margin: 0 1rem;
+        }
+
+        .accommodation-card {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 2rem;
+            margin-top: 3rem;
+            border-radius: 25px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            max-width: 400px;
+        }
+
+        .detail-card h3 {
+            font-size: clamp(1.3rem, 2.4vw, 1.6rem);
+            font-weight: 700;
+            color: #d4869c;
+            margin-bottom: 1rem;
+        }
+
+        .detail-card p {
+            text-align: center;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            margin: 0.3rem 0;
+        }
+
+        .calendar-container {
+            max-width: 900px;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .day-card {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-radius: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .day-card.locked {
+            background: #d4869c;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+
+        .day-card.locked.hiding {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        .day-card.unlocked {
+            background: rgba(255, 255, 255, 0.7);
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .day-card.unlocked.showing {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .day-card.locked:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 40px rgba(212, 134, 156, 0.3);
+        }
+
+        .bow-icon {
+            font-size: 4rem;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.1));
+        }
+
+        .day-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .day-number {
+            background: #d4869c;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .day-title {
+            flex: 1;
+        }
+
+        .day-title h3 {
+            font-size: clamp(1.3rem, 2.6vw, 1.6rem);
+            color: #5d4e3c;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .day-title p {
+            font-size: clamp(0.95rem, 1.9vw, 1.1rem);
+            color: #8b7355;
+            margin: 0;
+            text-align: left;
+        }
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+        }
+
+        .timeline-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-content p {
+            margin: 0;
+            text-align: left;
+            font-size: clamp(0.95rem, 1.9vw, 1.1rem);
+        }
+
+        .timeline-time {
+            font-weight: 700;
+            color: #d4869c;
+        }
+
+        .hero {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .easter-egg {
+            display: none;
+        }
+
+        .message-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 30px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .message-popup.active {
+            display: block;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .message-popup h3 {
+            color: #d4869c;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .message-popup p {
+            color: #5d4e3c;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .close-popup {
+            margin-top: 1.5rem;
+            background: #d4869c;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 20px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .close-popup:hover {
+            background: #c27588;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .detail-grid {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+                margin: 1rem 0;
+            }
+            
+            .day-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background decorations -->
+    <div id="decorations"></div>
+
+    <!-- Snowflakes -->
+    <div id="snowflakes"></div>
+
+    <!-- Easter Eggs - positioned within sections -->
+    <div style="position: relative;">
+        <div class="easter-egg" style="top: 50px; left: 5%;" data-message="0">❤️</div>
+    </div>
+
+    <!-- Message Popup -->
+    <div class="overlay" id="overlay"></div>
+    <div class="message-popup" id="messagePopup">
+        <h3 id="popupTitle"></h3>
+        <p id="popupMessage"></p>
+        <button class="close-popup" onclick="closePopup()">❤️</button>
+    </div>
+
+    <!-- Easter Eggs - positioned within sections -->
+    <div style="position: relative;">
+        <div class="easter-egg" style="top: 50px; left: 5%;" data-message="0">❤️</div>
+    </div>
+
+    <!-- Section 1: Initial -->
+    <section class="visible">
+        <h1 class="hero">Für Lea</h1>
+        <p style="margin-top: 2rem; font-size: 1.4rem; font-weight: 600;">Alles Gute zum 20. Geburtstag ❤</p>
+        <p style="margin-top: 1rem; color: #8b7355; font-size: 1.1rem;">Eine besondere Überraschung wartet auf dich...</p>
+    </section>
+
+    <!-- Section 2: The Reveal -->
+    <section style="position: relative;">
+        <div class="easter-egg" style="top: 60%; left: 8%;" data-message="0">❤️</div>
+        <h2>Pack deine Koffer</h2>
+        <h1>Wir fahren nach<br><span class="accent">Kopenhagen</span></h1>
+        <div class="date-box">
+            <p style="font-size: 1.3rem; margin: 0; font-weight: 700;">30. Dezember – 2. Januar</p>
+            <p style="margin: 0.5rem 0 0 0; color: #8b7355;">Silvester in Dänemarks Hauptstadt</p>
+        </div>
+    </section>
+
+    <!-- Section 3: Journey Details -->
+    <section>
+        <h2>Die Reise</h2>
+        <p style="margin-bottom: 2rem; color: #8b7355; font-size: clamp(1rem, 2vw, 1.2rem);">Von Rostock nach Kopenhagen und zurück</p>
+        <div class="detail-grid">
+            <div class="detail-card">
+                <h3>🚌 Hinfahrt</h3>
+                <p style="font-weight: 700; margin-top: 0.5rem;">30. Dezember</p>
+                <p>Abfahrt: 12:30 Uhr</p>
+                <p style="color: #8b7355; font-size: 0.9rem;">Rostock</p>
+                <p style="margin-top: 1rem;">Ankunft: 17:40 Uhr</p>
+                <p style="color: #8b7355; font-size: 0.9rem;">Kopenhagen</p>
+            </div>
+            
+            <div class="flow-arrow">→</div>
+            
+            <div class="accommodation-card" style="margin: 0;">
+                <h3>🏨 Unterkunft</h3>
+                <p style="font-weight: 700; margin-top: 0.5rem;">Cityhub Copenhagen</p>
+                <p style="color: #8b7355; margin-top: 0.5rem;">3 Nächte im Herzen der Stadt</p>
+                <p style="margin-top: 0.5rem;">✨</p>
+            </div>
+            
+            <div class="flow-arrow">→</div>
+            
+            <div class="detail-card">
+                <h3>🚌 Rückfahrt</h3>
+                <p style="font-weight: 700; margin-top: 0.5rem;">2. Januar</p>
+                <p>Abfahrt: 13:05 Uhr</p>
+                <p style="color: #8b7355; font-size: 0.9rem;">Kopenhagen</p>
+                <p style="margin-top: 1rem;">Ankunft: 18:20 Uhr</p>
+                <p style="color: #8b7355; font-size: 0.9rem;">Rostock</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Daily Calendar -->
+    <section style="position: relative;">
+        <div class="easter-egg" style="top: 30%; right: 10%;" data-message="1">💌</div>
+        <h2>Unsere Tage in Kopenhagen</h2>
+        <p style="margin-bottom: 2rem; color: #8b7355;">Entspannt und voller schöner Momente</p>
+        
+        <div class="calendar-container">
+            <!-- Tag 1 -->
+            <div class="day-card locked" data-day="1">
+                <div class="bow-icon">🎀</div>
+            </div>
+            <div class="day-card unlocked" data-day="1" style="display: none;">
+                <div class="day-header">
+                    <div class="day-number">1</div>
+                    <div class="day-title">
+                        <h3>Montag, 30. Dezember</h3>
+                        <p>Ankunft & Entspannung</p>
+                    </div>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🚌</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">12:30 Uhr</p>
+                            <p>Abfahrt von Rostock - Die Reise beginnt!</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🏨</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">~18:00 Uhr</p>
+                            <p>Check-in im Cityhub & frisch machen</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🍽️</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">Abend</p>
+                            <p>Erstes Abendessen in der Stadt & gemütlicher Spaziergang</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tag 2 -->
+            <div class="day-card locked" data-day="2">
+                <div class="bow-icon">🎀</div>
+            </div>
+            <div class="day-card unlocked" data-day="2" style="display: none;">
+                <div class="day-header">
+                    <div class="day-number">2</div>
+                    <div class="day-title">
+                        <h3>Dienstag, 31. Dezember</h3>
+                        <p>Silvester - Der besondere Tag</p>
+                    </div>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon">☕</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">Vormittag</p>
+                            <p>Gemütliches Frühstück & Matcha Pause in einem Café</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">📚</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">Mittag</p>
+                            <p>Besuch der Königlichen Bibliothek - Der Schwarze Diamant</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🌿</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">Nachmittag</p>
+                            <p>Botanischer Garten - Wärme & exotische Pflanzen</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🍽️</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">Abend</p>
+                            <p>Romantisches Silvester-Dinner (Überraschung!)</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🎆</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">Mitternacht</p>
+                            <p>Feuerwerk & ins neue Jahr tanzen ✨</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tag 3 -->
+            <div class="day-card locked" data-day="3">
+                <div class="bow-icon">🎀</div>
+            </div>
+            <div class="day-card unlocked" data-day="3" style="display: none;">
+                <div class="day-header">
+                    <div class="day-number">3</div>
+                    <div class="day-title">
+                        <h3>Mittwoch, 1. Januar</h3>
+                        <p>Neujahr - Frischer Start</p>
+                    </div>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon">☕</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">Vormittag</p>
+                            <p>Ausschlafen & gemütlicher Kaffee zum Neujahrsstart</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🎡</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">Mittag</p>
+                            <p>Tivoli Vergnügungspark - Magie im Winter</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🍵</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">Nachmittag</p>
+                            <p>Matcha Break & durch die Stadt schlendern</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🌹</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">Später Nachmittag</p>
+                            <p>Rosenborg Schloss & Gärten entdecken</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🍽️</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">Abend</p>
+                            <p>Gemütliches Abendessen & letzte Nacht genießen</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tag 4 -->
+            <div class="day-card locked" data-day="4">
+                <div class="bow-icon">🎀</div>
+            </div>
+            <div class="day-card unlocked" data-day="4" style="display: none;">
+                <div class="day-header">
+                    <div class="day-number">4</div>
+                    <div class="day-title">
+                        <h3>Donnerstag, 2. Januar</h3>
+                        <p>Letzte Eindrücke & Heimreise</p>
+                    </div>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon">☕</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">Vormittag</p>
+                            <p>Letztes dänisches Frühstück & entspannt packen</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">⭐</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">Mittag</p>
+                            <p>Kastellet Festung oder Grundtvigs Kirche - letzte Highlights</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🚌</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">13:05 Uhr</p>
+                            <p>Abfahrt nach Rostock - mit vielen schönen Erinnerungen</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🏠</div>
+                        <div class="timeline-content">
+                            <p class="timeline-time">~18:20 Uhr</p>
+                            <p>Zurück zu Hause ❤</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: Final -->
+    <section>
+        <h1 style="font-size: clamp(2rem, 5vw, 4rem); line-height: 1.3;">Happy Birthday</h1>
+        <p style="margin-top: 2rem; font-size: 1.3rem; font-weight: 600;">wünscht dir dein Kjell ❤️</p>
+    </section>
+
+    <script>
+        // Create background decorations (hearts and teddy bears)
+        function createDecorations() {
+            const container = document.getElementById('decorations');
+            const decorations = ['❤', '🧸'];
+            
+            // Create a grid for better distribution
+            const cols = 6;
+            const rows = 8;
+            
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    // Skip some positions randomly for natural look
+                    if (Math.random() > 0.4) continue;
+                    
+                    const deco = document.createElement('div');
+                    const isHeart = Math.random() > 0.5;
+                    deco.className = isHeart ? 'heart-bg' : 'teddy-bg';
+                    deco.innerHTML = decorations[isHeart ? 0 : 1];
+                    
+                    // Position with some randomness within grid cell
+                    const leftBase = (col / cols) * 100;
+                    const topBase = (row / rows) * 100;
+                    deco.style.left = (leftBase + Math.random() * (100/cols) - (50/cols)) + '%';
+                    deco.style.top = (topBase + Math.random() * (100/rows) - (50/rows)) + '%';
+                    
+                    container.appendChild(deco);
+                }
+            }
+        }
+
+        // Create snowflakes
+        function createSnowflakes() {
+            const container = document.getElementById('snowflakes');
+            const snowflakeCount = 20;
+            
+            for (let i = 0; i < snowflakeCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.innerHTML = '❄';
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                snowflake.style.animationDelay = Math.random() * 5 + 's';
+                snowflake.style.fontSize = (Math.random() * 1 + 0.5) + 'em';
+                container.appendChild(snowflake);
+            }
+        }
+
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.3
+        });
+
+        // Observe all sections
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Initialize
+        createDecorations();
+        createSnowflakes();
+
+        // Easter egg messages - removed
+        const messages = [];
+
+        // Easter egg click handlers - removed
+        document.querySelectorAll('.easter-egg').forEach(egg => {
+            egg.style.display = 'none';
+        });
+
+        function closePopup() {
+            document.getElementById('messagePopup').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        document.getElementById('overlay').addEventListener('click', closePopup);
+
+        // Bow click handlers to reveal days
+        document.querySelectorAll('.day-card.locked').forEach(card => {
+            card.addEventListener('click', function() {
+                const dayNum = this.getAttribute('data-day');
+                const unlockedCard = document.querySelector(`.day-card.unlocked[data-day="${dayNum}"]`);
+                
+                // Add hiding class for smooth fade
+                this.classList.add('hiding');
+                
+                // Wait for animation, then swap
+                setTimeout(() => {
+                    this.style.display = 'none';
+                    if (unlockedCard) {
+                        unlockedCard.style.display = 'block';
+                        // Trigger reflow
+                        unlockedCard.offsetHeight;
+                        unlockedCard.classList.add('showing');
+                    }
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>
